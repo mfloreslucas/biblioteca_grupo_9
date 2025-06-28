@@ -29,6 +29,9 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Copiar archivos de la aplicación
 COPY . /var/www/html
 
+# Copiar .env.example a .env
+RUN cp .env.example .env
+
 # Instalar dependencias de Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
@@ -37,16 +40,24 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Generar clave de aplicación
-RUN php artisan key:generate --force
-
-# Optimizar Laravel
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
+# Crear script de inicio
+RUN echo '#!/bin/bash\n\
+# Generar clave de aplicación si no existe\n\
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then\n\
+    php artisan key:generate --force\n\
+fi\n\
+\n\
+# Optimizar Laravel\n\
+php artisan config:cache\n\
+php artisan route:cache\n\
+php artisan view:cache\n\
+\n\
+# Iniciar supervisor\n\
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf\n\
+' > /usr/local/bin/start.sh && chmod +x /usr/local/bin/start.sh
 
 # Exponer puerto
 EXPOSE 80
 
 # Comando para iniciar servicios
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"] 
+CMD ["/usr/local/bin/start.sh"] 
