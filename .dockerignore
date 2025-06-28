@@ -1,0 +1,49 @@
+# Archivos de desarrollo
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Archivos de Laravel
+/vendor/
+.env
+.env.*
+!.env.example
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Archivos de Git
+.git/
+.gitignore
+
+# Archivos de IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Archivos de documentación
+README.md
+*.md
+
+# Archivos de testing
+/tests/
+phpunit.xml
+
+# Archivos de build
+/public/hot
+/public/storage
+/public/mix-manifest.json 
